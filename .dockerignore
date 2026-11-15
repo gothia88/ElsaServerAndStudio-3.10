@@ -1,0 +1,11 @@
+**/bin
+**/obj
+**/.vs
+**/.git
+**/.gitignore
+**/*.user
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/appsettings.*.local.json
+**/.env

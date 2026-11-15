@@ -1,0 +1,37 @@
+# Custom Elsa server (API + custom hooks + archive/history).
+# Studio is served by the official combined community image, pointed at this server.
+services:
+  tajan-workflows-host:
+    build:
+      context: .
+      dockerfile: src/Tajan.Workflows.Host/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      # Required: same database as Elsa (main schema "Elsa", archive schema "dbo").
+      ConnectionStrings__Default: ${ELSA_DB_CONNECTION:?set ELSA_DB_CONNECTION}
+      # Required outside Development (3.10 identity requirement).
+      Identity__Tokens__SigningKey: ${ELSA_SIGNING_KEY:?set ELSA_SIGNING_KEY}
+      Http__BaseUrl: http://localhost:15000
+      Http__BasePath: /workflows
+      JavaScript__AllowClrAccess: "false"
+      Archive__PurgeMainAfterArchive: "true"
+      Archive__AutoCreateTables: "true"
+      AuthServer__BaseUrl: ${AUTH_SERVER_URL:-}
+      AuthServer__ApplicationId: ${AUTH_SERVER_APP_ID:-}
+      AuthServer__ApplicationSecret: ${AUTH_SERVER_APP_SECRET:-}
+    ports:
+      - "15000:8080"
+
+  # Official community image: same-process Elsa Server API + Studio (Blazor Server).
+  # It talks to the custom server above via Backend__Url.
+  elsa-studio:
+    image: elsaworkflows/elsa-server-and-studio-v3:3.10.1
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      Backend__Url: http://tajan-workflows-host:8080/elsa/api
+      Identity__Tokens__SigningKey: ${ELSA_SIGNING_KEY:?set ELSA_SIGNING_KEY}
+    ports:
+      - "16000:8080"
+    depends_on:
+      - tajan-workflows-host

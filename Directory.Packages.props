@@ -1,0 +1,42 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Label="Elsa 3.10.1">
+    <PackageVersion Include="Elsa" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Common" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Workflows.Core" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Workflows.Runtime" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Workflows.Api" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Persistence.EFCore.SqlServer" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Expressions.CSharp" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Expressions.JavaScript" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Expressions.Liquid" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Http" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Identity" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Scheduling" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Tenants" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Tenants.AspNetCore" Version="3.10.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="EF Core (net10 line used by Elsa 3.10.1)">
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
+    <!-- Override the vulnerable transitive pulled by Microsoft.Data.SqlClient 6.1.1. -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup Label="Web / API">
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup Label="Logging">
+    <PackageVersion Include="Serilog" Version="4.3.1" />
+    <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageVersion Include="Serilog.Sinks.MSSqlServer" Version="10.0.0" />
+  </ItemGroup>
+</Project>
