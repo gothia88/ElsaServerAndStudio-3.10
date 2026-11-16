@@ -59,6 +59,13 @@ Log.Information("Content root: {ContentRoot}", builder.Environment.ContentRootPa
 var connectionString = configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("ConnectionStrings:Default is required.");
 
+// Log the target (server/database only — never credentials) for easier troubleshooting.
+var connectionStringBuilder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
+Log.Information(
+    "Database target: {DataSource}/{Database}",
+    connectionStringBuilder.DataSource,
+    connectionStringBuilder.InitialCatalog);
+
 var identitySection = configuration.GetSection("Identity");
 var identityTokenSection = identitySection.GetSection("Tokens");
 
