@@ -18,6 +18,7 @@
     <PackageVersion Include="Elsa.Scheduling" Version="3.10.1" />
     <PackageVersion Include="Elsa.Tenants" Version="3.10.1" />
     <PackageVersion Include="Elsa.Tenants.AspNetCore" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Storage.Files" Version="3.10.1" />
   </ItemGroup>
 
   <ItemGroup Label="EF Core (net10 line used by Elsa 3.10.1)">
@@ -30,6 +31,19 @@
 
   <ItemGroup Label="Web / API">
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup Label="Elsa Studio (single-process WASM UI, 3.10.1)">
+    <PackageVersion Include="Elsa.Api.Client" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio.Core.BlazorWasm" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio.Login.BlazorWasm" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio.Dashboard" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio.Workflows" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Studio.Workflows.Dashboard" Version="3.10.1" />
   </ItemGroup>
 
   <ItemGroup Label="Logging">

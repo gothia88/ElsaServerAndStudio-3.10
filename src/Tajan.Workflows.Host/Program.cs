@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using Tajan.Workflows.Extensions.Data.ArchiveEntities;
 using Tajan.Workflows.Extensions.Data.MainEntities;
 using Tajan.Workflows.Extensions.Options;
@@ -21,12 +22,31 @@ using Tajan.Workflows.Host.Authentication;
 using Tajan.Workflows.Host.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseStaticWebAssets();
+builder.Configuration.AddJsonFile("appsettings.Identity.json", optional: true, reloadOnChange: false);
+
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(configuration)
-    .CreateLogger();
+// Serilog: configuration-driven, plus the optional SQL Server sink (ElsaServerLogs)
+// when ConnectionStrings:Logs is provided. No connection string is committed.
+var loggerConfiguration = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration);
+
+var logDbConnectionString = configuration.GetConnectionString("Logs");
+if (!string.IsNullOrWhiteSpace(logDbConnectionString))
+{
+    loggerConfiguration.WriteTo.MSSqlServer(
+        connectionString: logDbConnectionString,
+        sinkOptions: new MSSqlServerSinkOptions
+        {
+            TableName = "ElsaServerLogs",
+            SchemaName = "dbo",
+            AutoCreateSqlTable = true
+        });
+}
+
+Log.Logger = loggerConfiguration.CreateLogger();
 builder.Host.UseSerilog();
 
 var connectionString = configuration.GetConnectionString("Default")
@@ -69,7 +89,8 @@ services.AddElsa(elsa =>
         .UseHttp(http =>
         {
             http.ConfigureHttpOptions = options => configuration.GetSection("Http").Bind(options);
-        });
+        })
+        .UseFileStorage();
 
     elsa.UseTenants(tenants =>
     {
@@ -116,16 +137,19 @@ services.AddAuthorization(options =>
 
 services.AddCors(cors => cors.AddDefaultPolicy(policy =>
     policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*")));
+services.AddRazorPages();
 
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseCors();
+app.UseBlazorFrameworkFiles();
 
 var apiRoutePrefix = app.Services.GetRequiredService<IOptions<ApiEndpointOptions>>().Value.RoutePrefix;
 app.MapWorkflowsApi(apiRoutePrefix);
 
 app.UseRouting();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -146,6 +170,9 @@ app.Use(async (context, next) =>
 
 app.UseTenants();
 app.UseWorkflows();
+
+// Single-process Studio: the Blazor WASM client is served by this host.
+app.MapFallbackToPage("/_Host");
 
 await app.RunAsync();
 
