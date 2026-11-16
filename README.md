@@ -74,10 +74,20 @@ A committed template is at `appsettings.Identity.example.json`. Provide the real
 into the container; never commit it. The `admin` application role was corrected from the legacy
 non-existent `admin` role to `admin-1`.
 
+## Test database
+
+This checkout is configured for the test instance without committing credentials:
+
+- **Docker Compose:** `.env` (gitignored) provides `ELSA_DB_CONNECTION` for
+  `Server=Zagros.tajan.local,49182\sql2022`, database `ElsaDb_Test`, login `Elsa`.
+- **Local `dotnet run`:** `src/Tajan.Workflows.Host/appsettings.Local.json` (gitignored) provides the
+  same connection string and is loaded only in `Development`.
+
+Both files are excluded from Git and Docker builds. Replace them for other environments.
+
 ## Run locally
 
 ```bash
-export ConnectionStrings__Default="Server=...;Database=ElsaDb;..."
 dotnet run --project src/Tajan.Workflows.Host
 ```
 

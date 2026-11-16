@@ -25,6 +25,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 builder.Configuration.AddJsonFile("appsettings.Identity.json", optional: true, reloadOnChange: false);
 
+// Local, gitignored overrides (connection string etc.) for `dotnet run` in Development.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+}
+
 var services = builder.Services;
 var configuration = builder.Configuration;
 
