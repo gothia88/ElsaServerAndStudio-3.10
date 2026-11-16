@@ -111,7 +111,9 @@ services.AddElsa(elsa =>
         tenants.UseConfigurationBasedTenantsProvider(options => configuration.GetSection("Multitenancy").Bind(options));
         tenants.ConfigureMultitenancy(options =>
             options.TenantResolverPipelineBuilder = new TenantResolverPipelineBuilder()
-                .Append<ClaimsTenantResolver>());
+                .Append<ClaimsTenantResolver>()
+                // Allows unauthenticated HTTP workflow calls to select a tenant via X-Tenant-Id.
+                .Append<HeaderTenantResolver>());
     });
 });
 
