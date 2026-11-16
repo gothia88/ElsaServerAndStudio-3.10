@@ -48,6 +48,7 @@ if (!string.IsNullOrWhiteSpace(logDbConnectionString))
 
 Log.Logger = loggerConfiguration.CreateLogger();
 builder.Host.UseSerilog();
+Log.Information("Content root: {ContentRoot}", builder.Environment.ContentRootPath);
 
 var connectionString = configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("ConnectionStrings:Default is required.");
