@@ -14,4 +14,8 @@
     <PackageReference Include="System.Security.Cryptography.Pkcs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\sql\*.sql" Link="Sql\%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

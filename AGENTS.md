@@ -43,9 +43,9 @@ port 15000 together with `/elsa/api`.
 
 ## Registration / lifetime gotchas
 
-- `ArchiveSchemaInitializer` and `ArchiveRetentionService` are **singleton hosted services**. They must
-  resolve `DbContext`s through `IServiceScopeFactory`; injecting a scoped `DbContext` directly fails
-  startup validation.
+- `ArchiveSchemaInitializer`, `AuditingProceduresInitializer` and `ArchiveRetentionService` are
+  **singleton hosted services**. They must resolve `DbContext`s through `IServiceScopeFactory`;
+  injecting a scoped `DbContext` directly fails startup validation.
 - Notification handlers are discovered via `services.AddNotificationHandlersFrom<Program>()`.
 - `services.AddHttpClient()` is required for `ClientCredentialsAuthenticationHandler`.
 - The Studio WASM client calls `getClientConfig` at startup. `Pages/_Host.cshtml` defines it with the
@@ -61,8 +61,10 @@ port 15000 together with `/elsa/api`.
   creates the `dbo` archive tables when missing.
 - The `Data/MainEntities/*` and `Data/ArchiveEntities/*` POCOs are **hand-written mirrors of Elsa's EF schema**.
   Re-sync them after any Elsa upgrade.
-- Auditing endpoints call stored procedures `Elsa.sp_GetWorkflowInstanceWithAuditing` and
-  `Elsa.sp_GetBusinessWorkflowInstanceWithAuditing`; they exist only in the database.
+- The auditing stored procedures live in `sql/*.sql`, are embedded into `Tajan.Workflows.Extensions`, and
+  are created/updated at startup by `AuditingProceduresInitializer`
+  (`Archive:AutoCreateAuditingProcedures=true`). The business procedure needs SQL Server 2022+
+  (`LAST_VALUE ... IGNORE NULLS`).
 
 ## Logging / storage
 

@@ -111,6 +111,7 @@ services.Configure<HooksOptions>(configuration.GetSection("Hooks"));
 services.AddScoped<IArchiveService, ArchiveService>();
 services.AddScoped<IWorkflowInstanceService, WorkflowInstanceService>();
 services.AddHostedService<ArchiveSchemaInitializer>();
+services.AddHostedService<AuditingProceduresInitializer>();
 services.AddHostedService<ArchiveRetentionService>();
 services.AddDbContext<ElsaMainDataDbContext>(options => options.UseSqlServer(connectionString));
 services.AddDbContext<ElsaArchiveDataDbContext>(options => options.UseSqlServer(connectionString));

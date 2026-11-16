@@ -13,6 +13,11 @@ public class ArchiveOptions
     public bool AutoCreateTables { get; set; } = true;
 
     /// <summary>
+    /// Create (or update) the auditing stored procedures on startup.
+    /// </summary>
+    public bool AutoCreateAuditingProcedures { get; set; } = true;
+
+    /// <summary>
     /// Delete archived workflow instances older than this many days. 0 disables retention cleanup.
     /// </summary>
     public int RetentionDays { get; set; }

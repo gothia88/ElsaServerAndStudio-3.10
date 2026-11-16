@@ -117,6 +117,7 @@ Set it to `true` if you want a purge-after-copy workflow. The service also adds:
 2. **Transactions** — copy (and optional purge) run in one ambient transaction.
 3. **Retention** — `ArchiveRetentionService` can delete old archived instances.
 4. **Schema bootstrap** — `ArchiveSchemaInitializer` creates the `dbo` archive tables if missing.
+5. **Auditing procedures** — `AuditingProceduresInitializer` runs the embedded `sql/*.sql` scripts (`CREATE OR ALTER`) so the auditing endpoints work on a fresh database. Set `Archive:AutoCreateAuditingProcedures=false` to manage them manually (see `sql/README.md`).
 
 ## History API responses (restored)
 
@@ -138,7 +139,7 @@ Set it to `true` if you want a purge-after-copy workflow. The service also adds:
 ## Known follow-ups
 
 - Re-sync the hand-written EF entities in `Data/MainEntities` against Elsa 3.10's schema.
-- The auditing endpoints call `Elsa.sp_GetWorkflowInstanceWithAuditing` /
-  `sp_GetBusinessWorkflowInstanceWithAuditing`; those stored procedures are not in this repo.
+- The business auditing procedure uses `LAST_VALUE(...) IGNORE NULLS`, which requires **SQL Server 2022+**
+  (or Azure SQL). On older versions, adapt the window function (see `sql/README.md`).
 - CORS is wide open and the client-credentials handler calls the auth server on every request.
 - Add automated tests for archive idempotency, purge, and retention.
