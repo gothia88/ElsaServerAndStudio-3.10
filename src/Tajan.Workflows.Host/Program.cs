@@ -128,8 +128,18 @@ var pluginPath = Path.IsPathRooted(pluginDirectory)
 var pluginAssemblies = ActivityPluginLoader.Load(pluginPath);
 foreach (var assembly in pluginAssemblies)
 {
+    var activityTypes = assembly.GetExportedTypes()
+        .Where(t => typeof(IActivity).IsAssignableFrom(t)
+                    && t is { IsAbstract: false, IsInterface: false, IsGenericTypeDefinition: false })
+        .ToList();
+
+    Log.Information(
+        "Activity plugin {Assembly}: {Count} activity type(s): {Types}",
+        assembly.GetName().Name,
+        activityTypes.Count,
+        string.Join(", ", activityTypes.Select(t => t.FullName)));
+
     services.AddActivitiesFrom(assembly);
-    Log.Information("Registered activity plugin assembly: {Assembly}", assembly.GetName().Name);
 }
 
 // Custom hooks (ported from the 3.5 project).
