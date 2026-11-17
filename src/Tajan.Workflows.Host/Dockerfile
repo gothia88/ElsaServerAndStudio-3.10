@@ -5,6 +5,7 @@ WORKDIR /src
 COPY Directory.Packages.props ./
 COPY src/Tajan.Workflows.Host/Tajan.Workflows.Host.csproj src/Tajan.Workflows.Host/
 COPY src/Tajan.Workflows.Extensions/Tajan.Workflows.Extensions.csproj src/Tajan.Workflows.Extensions/
+COPY src/ElsaStudio/ElsaStudio.csproj src/ElsaStudio/
 RUN dotnet restore src/Tajan.Workflows.Host/Tajan.Workflows.Host.csproj
 
 COPY . .

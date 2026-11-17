@@ -1,44 +1,48 @@
-# Custom Elsa server (API + Studio UI + custom hooks + archive/history).
-# Studio is served in-process by the host (Blazor WASM), matching the original setup.
 services:
-  tajan-workflows-host:
+  # Custom Elsa 3.10 host: serves Studio + API + workflow HTTP endpoints.
+  elsa-server-and-studio:
+    image: elsa-server-and-studio-v3-10:latest
     build:
       context: .
       dockerfile: src/Tajan.Workflows.Host/Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:8080
-      # Same database as Elsa (main schema "Elsa", archive schema "dbo").
+      ASPNETCORE_ENVIRONMENT: Development
+      HTTP_PORTS: 80
+      Http__BaseUrl: http://elsa.test.twp.tajan.local
+      Http__BasePath: /api/workflows
       ConnectionStrings__Default: ${ELSA_DB_CONNECTION:?set ELSA_DB_CONNECTION}
-      # Optional SQL Server sink for application logs (ElsaServerLogs).
+      # Optional SQL Server application-log sink (ElsaLogDb_Test / dbo.ElsaServerLogs).
       ConnectionStrings__Logs: ${ELSA_LOG_DB_CONNECTION:-}
-      # Required outside Development (3.10 identity requirement).
+      AuthServer__BaseUrl: ${AUTH_SERVER_URL:-http://elsa.tajan.local:14000}
+      AuthServer__ApplicationId: ${AUTH_SERVER_APP_ID:-A662B524-667F-4AD7-B39F-268C21C9926E}
+      AuthServer__ApplicationSecret: ${AUTH_SERVER_APP_SECRET:?set AUTH_SERVER_APP_SECRET}
+      Serilog__MinimumLevel__Default: Error
+      # Same signing key as the clients; keep it stable.
       Identity__Tokens__SigningKey: ${ELSA_SIGNING_KEY:?set ELSA_SIGNING_KEY}
-      Http__BaseUrl: http://localhost:15000
-      Http__BasePath: /workflows
-      JavaScript__AllowClrAccess: "false"
-      # Keep finished instances in Elsa's live tables so Studio can still show them.
+      # Keep finished instances visible in Studio (matches the old behavior).
       Archive__PurgeMainAfterArchive: "false"
       Archive__AutoCreateTables: "true"
-      AuthServer__BaseUrl: ${AUTH_SERVER_URL:-}
-      AuthServer__ApplicationId: ${AUTH_SERVER_APP_ID:-}
-      AuthServer__ApplicationSecret: ${AUTH_SERVER_APP_SECRET:-}
+      Plugins__Directory: plugins
+    volumes:
+      # The identity seed (rahman/admin/alice + Postman app) is gitignored and excluded
+      # from the image, so mount it at runtime. It must exist on the server.
+      - ./src/Tajan.Workflows.Host/appsettings.Identity.json:/app/appsettings.Identity.json:ro
+      # Drop activity plugin DLLs here (Elsa.Activities.Samples.dll, etc.).
+      - ./src/Tajan.Workflows.Host/plugins:/app/plugins:ro
     ports:
-      - "15000:8080"
-    # Optional: mount the gitignored identity seed file (users + application).
-    # volumes:
-    #   - ./src/Tajan.Workflows.Host/appsettings.Identity.json:/app/appsettings.Identity.json:ro
+      - "80:80"
 
-  # Workflow history/auditing API (restored on its original port 16000).
-  tajan-workflows-extensions-api:
+  # Workflow history/auditing API (same DB), as in the old deployment.
+  elsa-extensions:
+    image: elsa-extensions-v3-10:latest
     build:
       context: .
       dockerfile: src/Tajan.Workflows.Extensions.Api/Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      HTTP_PORTS: 80
       ConnectionStrings__Default: ${ELSA_DB_CONNECTION:?set ELSA_DB_CONNECTION}
     ports:
-      - "16000:8080"
+      - "16000:80"
     depends_on:
-      - tajan-workflows-host
+      - elsa-server-and-studio
