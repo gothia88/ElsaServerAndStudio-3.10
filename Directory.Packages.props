@@ -9,6 +9,7 @@
     <PackageVersion Include="Elsa.Workflows.Core" Version="3.10.1" />
     <PackageVersion Include="Elsa.Workflows.Runtime" Version="3.10.1" />
     <PackageVersion Include="Elsa.Workflows.Api" Version="3.10.1" />
+    <PackageVersion Include="Elsa.Bpmn.Interchange" Version="3.10.1" />
     <PackageVersion Include="Elsa.Persistence.EFCore.SqlServer" Version="3.10.1" />
     <PackageVersion Include="Elsa.Expressions.CSharp" Version="3.10.1" />
     <PackageVersion Include="Elsa.Expressions.JavaScript" Version="3.10.1" />

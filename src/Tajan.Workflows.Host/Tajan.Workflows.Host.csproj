@@ -13,6 +13,7 @@
     <PackageReference Include="Elsa.Workflows.Core" />
     <PackageReference Include="Elsa.Workflows.Runtime" />
     <PackageReference Include="Elsa.Workflows.Api" />
+    <PackageReference Include="Elsa.Bpmn.Interchange" />
     <PackageReference Include="Elsa.Persistence.EFCore.SqlServer" />
     <PackageReference Include="Elsa.Expressions.CSharp" />
     <PackageReference Include="Elsa.Expressions.JavaScript" />

@@ -23,6 +23,9 @@ using Tajan.Workflows.Host.Authentication;
 using Tajan.Workflows.Host.Middlewares;
 using Tajan.Workflows.Host.PluginSystem;
 
+// Support windows-1252 encodings used by some BPMN tools (e.g., Enterprise Architect).
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 builder.Configuration.AddJsonFile("appsettings.Identity.json", optional: true, reloadOnChange: false);
@@ -94,6 +97,7 @@ services.AddElsa(elsa =>
             runtime.UseEntityFrameworkCore(ef => ef.UseSqlServer(connectionString));
         })
         .UseWorkflowsApi()
+        .UseBpmnInterchange()
         .UseScheduling()
         .UseCSharp()
         .UseJavaScript(options =>
