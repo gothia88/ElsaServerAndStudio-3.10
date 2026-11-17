@@ -13,11 +13,11 @@ namespace Elsa.Activities.Samples;
 public class Greet : CodeActivity<string>
 {
     [Input(Description = "The name to greet.")]
-    public Input<string> Name { get; set; } = new(string.Empty);
+    public Input<string> PersonName { get; set; } = new(string.Empty);
 
     protected override void Execute(ActivityExecutionContext context)
     {
-        var name = Name.Get(context);
+        var name = PersonName.Get(context);
         context.SetResult($"Hello, {name}!");
     }
 }

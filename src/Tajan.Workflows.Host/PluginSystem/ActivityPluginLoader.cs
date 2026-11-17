@@ -27,12 +27,21 @@ public static class ActivityPluginLoader
         loadContext.Resolving += (_, name) =>
             AssemblyLoadContext.Default.Assemblies.FirstOrDefault(a => a.GetName().Name == name.Name);
 
+        // Skip assemblies the host already provides (e.g. Elsa.Workflows.Core) to avoid duplicate type identity.
+        var alreadyLoaded = new HashSet<string>(
+            AssemblyLoadContext.Default.Assemblies.Select(a => a.GetName().Name ?? string.Empty),
+            StringComparer.OrdinalIgnoreCase);
+
         var assemblies = new List<Assembly>();
 
         foreach (var file in Directory.GetFiles(fullPath, "*.dll"))
         {
             try
             {
+                var assemblyName = AssemblyName.GetAssemblyName(file);
+                if (alreadyLoaded.Contains(assemblyName.Name ?? string.Empty))
+                    continue;
+
                 var assembly = loadContext.LoadFromAssemblyPath(Path.GetFullPath(file));
                 assemblies.Add(assembly);
             }
