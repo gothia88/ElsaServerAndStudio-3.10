@@ -9,6 +9,7 @@ using Elsa.Tenants.AspNetCore;
 using Elsa.Tenants.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Api;
+using Elsa.Workflows.Management.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,7 @@ using Tajan.Workflows.Extensions.Options;
 using Tajan.Workflows.Extensions.Services;
 using Tajan.Workflows.Host.Authentication;
 using Tajan.Workflows.Host.Middlewares;
+using Tajan.Workflows.Host.PluginSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
@@ -116,6 +118,19 @@ services.AddElsa(elsa =>
                 .Append<HeaderTenantResolver>());
     });
 });
+
+// Runtime activity plugins: teams drop activity DLLs into the "plugins" folder (no rebuild).
+// Resolves relative to the content root (src/Tajan.Workflows.Host locally, /app in Docker).
+var pluginDirectory = configuration.GetValue("Plugins:Directory", "plugins");
+var pluginPath = Path.IsPathRooted(pluginDirectory)
+    ? pluginDirectory
+    : Path.Combine(builder.Environment.ContentRootPath, pluginDirectory);
+var pluginAssemblies = ActivityPluginLoader.Load(pluginPath);
+foreach (var assembly in pluginAssemblies)
+{
+    services.AddActivitiesFrom(assembly);
+    Log.Information("Registered activity plugin assembly: {Assembly}", assembly.GetName().Name);
+}
 
 // Custom hooks (ported from the 3.5 project).
 services.AddNotificationHandlersFrom<Program>();

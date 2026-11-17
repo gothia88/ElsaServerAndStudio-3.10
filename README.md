@@ -106,6 +106,18 @@ docker compose up --build
 - Host + Studio: http://localhost:15000
 - History API: http://localhost:16000 (restored to its original port)
 
+## Custom activity plugins
+
+Teams can add their own activities without touching the host. Three modes are supported
+(see `src/Tajan.Workflows.Host/plugins/README.md`):
+
+1. **Runtime DLL** — drop a team's `*.dll` into the `plugins/` folder; the host loads and registers it on startup.
+2. **NuGet package** — `dotnet pack` the team library and reference it, then `services.AddActivitiesFrom<TeamMarker>()`.
+3. **Project reference** — reference the team library directly and call `AddActivitiesFrom<TeamMarker>()`.
+
+A sample plugin is at `src/Elsa.Activities.Samples` (packable, `EnableDynamicLoading`), and the host scans
+`Plugins:Directory` (default `plugins`) at startup via `ActivityPluginLoader`.
+
 ## Custom hooks (ported from 3.5.1)
 
 | Hook | Location | Behavior |

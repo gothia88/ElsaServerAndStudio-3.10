@@ -32,6 +32,12 @@ appsettings.*.local.json
 *.nupkg
 *.snupkg
 
+## Runtime activity plugins (dropped DLLs)
+**/plugins/*.dll
+**/plugins/*.pdb
+**/plugins/*.deps.json
+**/plugins/*.runtimeconfig.json
+
 ## Office lock/temp files
 ~$*
 *.tmp

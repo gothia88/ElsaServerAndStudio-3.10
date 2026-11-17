@@ -66,6 +66,15 @@ port 15000 together with `/elsa/api`.
   (`Archive:AutoCreateAuditingProcedures=true`). The business procedure needs SQL Server 2022+
   (`LAST_VALUE ... IGNORE NULLS`).
 
+## Custom activity plugins
+
+- Teams add activities without touching the host. The host scans `Plugins:Directory` (default `plugins/`) at
+  startup via `ActivityPluginLoader` and calls `services.AddActivitiesFrom(assembly)` for each loaded DLL.
+- `src/Elsa.Activities.Samples` is the template (packable, `EnableDynamicLoading`, `[Activity("Tajan.Samples", ...)]`).
+- Three modes: runtime DLL drop, NuGet package + `AddActivitiesFrom<Marker>()`, or ProjectReference.
+  See `src/Tajan.Workflows.Host/plugins/README.md`.
+- Give each team a unique `[Activity]` namespace to avoid activity type-name collisions.
+
 ## Logging / storage
 
 - Serilog reads `appsettings.json`; the SQL Server sink (`dbo.ElsaServerLogs`) is added in code **only**
