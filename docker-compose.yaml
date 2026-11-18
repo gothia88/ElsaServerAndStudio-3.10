@@ -9,7 +9,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       HTTP_PORTS: 80
       Http__BaseUrl: http://elsa.test.twp.tajan.local
-      Http__BasePath: /api/workflows
+      Http__BasePath: /workflows
       ConnectionStrings__Default: ${ELSA_DB_CONNECTION:?set ELSA_DB_CONNECTION}
       # Optional SQL Server application-log sink (ElsaLogDb_Test / dbo.ElsaServerLogs).
       ConnectionStrings__Logs: ${ELSA_LOG_DB_CONNECTION:-}
